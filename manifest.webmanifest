@@ -1,0 +1,35 @@
+{
+  "name": "Ứng dụng dạy học Toán – Thầy Vũ Tiến Lực",
+  "short_name": "Dạy học Toán",
+  "description": "Trình chiếu công thức, ví dụ, luyện tập; in phiếu làm bài; mở trang web dạy học – Trường THPT Nguyễn Hữu Cảnh",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f6f2",
+  "theme_color": "#b8202c",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
