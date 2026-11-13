@@ -1,6 +1,5 @@
-Sw · JS
 // Service worker: chạy được khi mất mạng (lưu app + MathJax + phông chữ)
-const CACHE="day-hoc-toan-v20";
+const CACHE="day-hoc-toan-v21";
 const SHELL=["./","index.html","manifest.webmanifest","icon.svg","icon-192.png","icon-512.png",
   "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"];
 self.addEventListener("install",e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())); });
