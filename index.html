@@ -210,6 +210,16 @@ body.vmode .sl-intro img{animation:kburns 9s ease-out both}
 .sa-it .th{height:90px;display:grid;place-items:center;background:#fff;border-radius:5px;overflow:hidden;color:#999}
 .sa-it .th img{max-width:100%;max-height:90px}
 .sa-it b{color:#5B2C83}
+/* ===== làm đẹp LaTeX ===== */
+#lxBar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:90;display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:min(920px,94vw);padding:10px 14px;border-radius:12px;background:var(--ink);color:var(--paper);box-shadow:0 8px 28px rgba(0,0,0,.3);font-size:.84rem}
+#lxBar[hidden]{display:none}
+#lxBar span{opacity:.85;flex:1;min-width:200px}#lxBar i{font-style:normal;opacity:.7}
+#lxBar button{background:transparent;color:inherit;border:1px solid rgba(255,255,255,.4);padding:4px 10px;border-radius:8px;cursor:pointer}
+.lxbox summary{cursor:pointer;font-weight:600}
+.lxbox .lxo{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 16px;margin:8px 0}
+#lxDemo{display:flex;flex-direction:column;gap:4px;font-size:.78rem}
+#lxDemo div{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+#lxDemo code{font:.74rem/1.4 var(--f-code);background:var(--code-bg);padding:3px 6px;border-radius:4px;word-break:break-all}
 /* ===== phiếu tự học ===== */
 #twSrc{min-height:420px;font:.78rem/1.5 var(--f-code)}
 .tw-pages .tw .tp{margin-bottom:10px;box-shadow:0 1px 5px rgba(0,0,0,.25)}
@@ -646,7 +656,19 @@ body.zooming #ctl,body.zooming #pill,body.zooming #mini,body.zooming #webpop{vis
           <div class="sa-list" id="saList"></div>
         </div>
         <textarea id="src" spellcheck="false" aria-label="Nội dung bài giảng"></textarea>
-        <div class="row"><button class="primary big" id="btnPlay">▶ Trình chiếu</button><button class="auto big" id="btnAuto">⏵ Chiếu tự động</button><button class="vid big" id="btnVideo" title="Chiếu như video bài giảng: từng dòng hiện chậm rồi tự chuyển slide">🎬 Chiếu kiểu video</button><button class="big" id="btnRec" title="Quay lại phần chiếu kiểu video thành file video (.mp4 / .webm)">⏺ Quay thành video</button><button id="btnCheck">Kiểm tra</button></div>
+        <div class="row"><button class="primary big" id="btnPlay">▶ Trình chiếu</button><button class="auto big" id="btnAuto">⏵ Chiếu tự động</button><button class="vid big" id="btnVideo" title="Chiếu như video bài giảng: từng dòng hiện chậm rồi tự chuyển slide">🎬 Chiếu kiểu video</button><button class="big" id="btnRec" title="Quay lại phần chiếu kiểu video thành file video (.mp4 / .webm)">⏺ Quay thành video</button><button id="btnCheck">Kiểm tra</button><button id="btnLx" title="Làm đẹp mã LaTeX: \vec{AB} → \overrightarrow{AB}, 60^0 → 60^\circ, ≤ → \le …">✨ Làm đẹp LaTeX</button></div>
+        <details class="card lxbox" id="lxBox"><summary>✨ Làm đẹp LaTeX tự động khi nhập .md / JSON</summary>
+          <div class="lxo">
+            <label class="chk"><input type="checkbox" data-lx="auto"> <b>Tự làm đẹp khi dán / mở file</b> (có nút Hoàn tác)</label>
+            <label class="chk"><input type="checkbox" data-lx="vecAll"> Mọi vectơ dùng mũi tên dài, kể cả 1 chữ: $\vec a$ → $\overrightarrow{a}$</label>
+            <label class="chk"><input type="checkbox" data-lx="ang"> Góc \angle ABC → \widehat{ABC}</label>
+            <label class="chk"><input type="checkbox" data-lx="func"> Tên hàm: sin x, log x → \sin x, \log x</label>
+            <label class="chk"><input type="checkbox" data-lx="dec"> Dấu phẩy thập phân: 2,5 → 2{,}5 (bỏ qua toạ độ, tập hợp)</label>
+            <label class="chk"><input type="checkbox" data-lx="mul"> Dấu nhân 2*3 → 2 \cdot 3</label>
+          </div>
+          <p class="hint" style="margin:0 0 4px">Luôn làm: \vec{AB} → \overrightarrow{AB} · \hat{ABC} → \widehat{ABC} · 60^0, 60° → 60^\circ · ≤ ≥ ≠ ∈ ∩ ∪ ∅ π √ … → lệnh LaTeX · &lt;= &gt;= != → \le \ge \ne · \( \) và \[ \] → $ và $$. Chỉ sửa bên trong công thức; với JSON chỉ sửa trong các chuỗi.</p>
+          <div id="lxDemo"></div>
+        </details>
         <div class="savebox card" id="saveBox" hidden>
           <div class="idh"><b>📚 Lưu bài vào thư viện</b><span id="sbFrom"></span><button type="button" class="idx" id="sbClose" aria-label="Đóng">✕</button></div>
           <div class="lib-form">
@@ -820,6 +842,7 @@ body.zooming #ctl,body.zooming #pill,body.zooming #mini,body.zooming #webpop{vis
           <button type="button" class="primary" id="gwCopy">① Sao chép prompt cho AI</button>
           <button type="button" id="gwPaste">② Dán kết quả AI</button>
           <button type="button" id="gwSample">Nạp đề mẫu của kiểu này</button>
+          <button type="button" id="gwLx">✨ Làm đẹp LaTeX</button>
           <span class="hint" id="gwKindNote"></span>
         </div>
       </div>
@@ -871,6 +894,7 @@ nội dung, - gạch đầu dòng, 1. đánh số, $công thức$, ![hình](link
           <button type="button" class="primary" id="twCopy">① Sao chép câu lệnh cho AI</button>
           <button type="button" id="twPaste">② Dán kết quả AI</button>
           <button type="button" id="twSample">Nạp phiếu mẫu</button>
+          <button type="button" id="twLx">✨ Làm đẹp LaTeX</button>
           <button type="button" id="twToJson">⇄ Đổi .md ↔ JSON</button>
           <button type="button" id="twDl">⤓ Tải file</button>
           <span class="hint" id="twNote"></span>
@@ -3395,7 +3419,7 @@ function savePrompt(){ store.set("prompt",Object.fromEntries(["pKind","pLesson",
 ["pLesson","pGrade","pBook","pLevel","pFocus","pVD","pTN","pDS","pTL","pPages"].forEach(id=>$(id).addEventListener("change",savePrompt));
 $("btnShowPrompt").onclick=()=>{ const h=!$("prompt").hidden; $("prompt").hidden=h; $("btnShowPrompt").setAttribute("aria-expanded",!h); $("btnShowPrompt").textContent=h?"Xem prompt":"Ẩn prompt"; };
 $("btnPasteAI").onclick=async()=>{
-  try{ const txt=await navigator.clipboard.readText(); if(!txt.trim()) throw 0; $("src").value=cleanAI(txt); save(); modeFromKind(); build(); showView("soan"); toast("Đã dán kết quả AI."); $("src").scrollIntoView({block:"nearest"}); }
+  try{ const txt=await navigator.clipboard.readText(); if(!txt.trim()) throw 0; $("src").value=cleanAI(txt); save(); modeFromKind(); build(); showView("soan"); toast("Đã dán kết quả AI."); if(LXO().auto) lxApplyTo($("src")); $("src").scrollIntoView({block:"nearest"}); }
   catch{ showView("soan"); $("src").value=""; $("src").focus(); toast("Bấm Ctrl+V (Mac: Cmd+V) để dán kết quả AI vào ô nội dung."); }
 };
 // loại bỏ ```markdown ... ``` và lời dẫn AI thêm vào
@@ -3687,12 +3711,13 @@ function sameLesson(a,b){ return a.title.trim().toLowerCase()===b.title.trim().t
 async function libImport(fileList){
   const files=[...fileList].filter(f=>/\.(md|markdown|txt|json)$/i.test(f.name));
   if(!files.length){ toast("Không có file .md / .txt / .json nào để thêm."); return; }
-  let add=0, upd=0, same=0, bad=[]; let last=null; const got=[];
+  let add=0, upd=0, same=0, bad=[]; let last=null; const got=[]; let lxN=0;
   for(const f of files){
     let txt; try{ txt=await f.text(); }catch{ bad.push(f.name); continue; }
     let arr; try{ arr=/\.json$/i.test(f.name)?jsonToLessons(f.name,txt):[mdToLesson(f.webkitRelativePath||f.name,txt)]; }catch{ bad.push(f.name); continue; }
     if(!arr.length){ bad.push(f.name); continue; }
     for(const L of arr){
+      if(LXO().auto){ const r=lxAny(L.content); L.content=r.text; lxN+=lxTotal(r.cnt); }
       const ex=LIB.items.find(x=>x.id===L.id)||LIB.items.find(x=>sameLesson(x,L));
       if(ex){ got.push(ex.id); if(ex.content.trim()===L.content.trim()){ same++; last=ex; continue; } Object.assign(ex,{...L,id:ex.id,updatedAt:nowStamp()}); upd++; last=ex; sheetUpsert(ex); }
       else { LIB.items.unshift(L); add++; last=L; got.push(L.id); sheetUpsert(L); }
@@ -3701,7 +3726,7 @@ async function libImport(fileList){
   const uniq=[...new Set(got)]; if(uniq.length>1) LIB.pick=uniq;
   libSave(); if(last){ LIB.sel=last.id; store.set("libSel",LIB.sel); } LIB.q=""; $("libQ").value=""; LIB.qt=""; $("libGrade").value=""; libRender();
   if(uniq.length>1) setTimeout(()=>{ if(!$("show").hidden) return; toast(`Đã chọn sẵn ${uniq.length} bài vừa tải — bấm “▶ Chiếu ${uniq.length} bài liền mạch”.`); $("libPick").scrollIntoView({block:"nearest",behavior:"smooth"}); },2600);
-  toast([add&&`Đã thêm ${add} bài`,upd&&`cập nhật ${upd} bài trùng tên`,same&&`${same} bài đã có sẵn`,bad.length&&`không đọc được: ${bad.slice(0,3).join(", ")}${bad.length>3?"…":""}`].filter(Boolean).join(" · ")||"Không có gì thay đổi.");
+  toast([add&&`Đã thêm ${add} bài`,upd&&`cập nhật ${upd} bài trùng tên`,same&&`${same} bài đã có sẵn`,bad.length&&`không đọc được: ${bad.slice(0,3).join(", ")}${bad.length>3?"…":""}`,lxN&&`✨ làm đẹp ${lxN} chỗ LaTeX`].filter(Boolean).join(" · ")||"Không có gì thay đổi.");
 }
 function libFiltered(){
   const q=LIB.q.trim().toLowerCase(), g=$("libGrade").value, so=$("libSort").value;
@@ -3844,8 +3869,8 @@ $("libZip").onclick=async()=>{ const ls=libFiltered(); if(!ls.length){ toast("Kh
 $("libNew").onclick=()=>{ showView("soan"); libSaveCurrent(); }; $("btnLibSave").onclick=libSaveCurrent;
 // nếu thầy chọn nhiều file ở “Mở file…” trang Soạn: đưa hết vào thư viện, mở bài đầu
 $("fileIn").onchange=async e=>{ const fs=[...e.target.files]; e.target.value=""; if(!fs.length) return;
-  if(fs.length===1 && !/\.json$/i.test(fs[0].name)){ const txt=(await fs[0].text()).replace(/^﻿/,"").replace(/\r\n?/g,"\n"); const fm=/^---\n[\s\S]*?\n---\n?([\s\S]*)$/.exec(txt); $("src").value=fm?fm[1].replace(/^\n+/,""):txt; LIB.cur=null; store.set("libCur",null); save(); build(); return; }
-  if(fs.length===1){ const txt=(await fs[0].text()).replace(/^﻿/,""); if(/"sheets"\s*:/.test(txt)){ $("src").value=txt; LIB.cur=null; save(); build(); return; } }
+  if(fs.length===1 && !/\.json$/i.test(fs[0].name)){ const txt=(await fs[0].text()).replace(/^﻿/,"").replace(/\r\n?/g,"\n"); const fm=/^---\n[\s\S]*?\n---\n?([\s\S]*)$/.exec(txt); $("src").value=fm?fm[1].replace(/^\n+/,""):txt; LIB.cur=null; store.set("libCur",null); save(); build(); if(LXO().auto) lxApplyTo($("src")); return; }
+  if(fs.length===1){ const txt=(await fs[0].text()).replace(/^﻿/,""); if(/"sheets"\s*:/.test(txt)){ $("src").value=txt; LIB.cur=null; save(); build(); if(LXO().auto) lxApplyTo($("src")); return; } }
   await libImport(fs); showView("thuvien"); };
 $("libExport").onclick=()=>libDownload(`thu-vien-md-${nowStamp().slice(0,10)}.json`,JSON.stringify(LIB.items,null,2),"application/json");
 // kéo thả file vào bất kỳ đâu khi đang ở Thư viện
@@ -4136,7 +4161,7 @@ Trước khi trả lời: tự giải lại mọi bài để chắc chắn đáp
 Chỉ trả về mã HTML trong một khối mã.`;
 }
 $("twCopy").onclick=async()=>{ const p=twPrompt(); try{ await navigator.clipboard.writeText(p); toast("Đã sao chép câu lệnh — dán vào Claude / ChatGPT / Gemini."); }catch{ $("twSrc").value=p; $("twSrc").select(); toast("Không sao chép tự động được — câu lệnh đang ở ô nội dung, bấm Ctrl+C."); } };
-$("twPaste").onclick=async()=>{ try{ const t=await navigator.clipboard.readText(); if(!t.trim()) throw 0; $("twSrc").value=cleanAI(t); store.set("twSrc",$("twSrc").value); twPreview(); toast("Đã dán phiếu từ AI."); }catch{ $("twSrc").value=""; $("twSrc").focus(); toast("Bấm Ctrl+V để dán kết quả AI vào ô nội dung."); } };
+$("twPaste").onclick=async()=>{ try{ const t=await navigator.clipboard.readText(); if(!t.trim()) throw 0; $("twSrc").value=cleanAI(t); store.set("twSrc",$("twSrc").value); twPreview(); if(LXO().auto) lxApplyTo($("twSrc")); toast("Đã dán phiếu từ AI."); }catch{ $("twSrc").value=""; $("twSrc").focus(); toast("Bấm Ctrl+V để dán kết quả AI vào ô nội dung."); } };
 $("twSample").onclick=()=>{ $("twSrc").value=$("twSampleMd").textContent.trim()+"\n"; store.set("twSrc",$("twSrc").value); twPreview(); };
 $("twToJson").onclick=()=>{ const s=$("twSrc").value; const k=twKind(s); if(k==="html"){ toast("Phiếu HTML không đổi được sang .md/JSON."); return; }
   try{ const d=twData(s); $("twSrc").value = k==="json" ? twToMD(d) : JSON.stringify({bai:d.bai,lop:d.lop,kien_thuc:d.kien_thuc,dang:d.dang,meo:d.meo},null,2); store.set("twSrc",$("twSrc").value); twPreview(); toast(k==="json"?"Đã đổi sang .md":"Đã đổi sang JSON"); }catch(e){ toast("JSON chưa đúng cú pháp: "+e.message); } };
@@ -4472,7 +4497,7 @@ ${K.ai}
 Trước khi trả lời: tự giải lại mọi bài để chắc chắn đáp án đúng; kiểm tra nội dung vừa một mặt giấy A4 ngang (mỗi nhiệm vụ ngắn gọn). Chỉ trả về MỘT khối mã markdown, không giải thích thêm.`;
 }
 $("gwCopy").onclick=async()=>{ const p=gwPrompt(); try{ await navigator.clipboard.writeText(p); toast("Đã sao chép prompt — dán vào Claude / ChatGPT / Gemini."); }catch{ $("gwSrc").value=p; $("gwSrc").select(); toast("Không sao chép tự động được — prompt đang ở ô nội dung, bấm Ctrl+C."); } };
-$("gwPaste").onclick=async()=>{ try{ const t=await navigator.clipboard.readText(); if(!t.trim()) throw 0; $("gwSrc").value=cleanAI(t); gwSave(); const d=gwParse($("gwSrc").value); if(d.kind) gwSetKind(d.kind,false); else gwPreview(); toast("Đã dán phiếu từ AI."); }catch{ $("gwSrc").value=""; $("gwSrc").focus(); toast("Bấm Ctrl+V để dán kết quả AI vào ô nội dung."); } };
+$("gwPaste").onclick=async()=>{ try{ const t=await navigator.clipboard.readText(); if(!t.trim()) throw 0; $("gwSrc").value=cleanAI(t); gwSave(); if(LXO().auto) lxApplyTo($("gwSrc")); const d=gwParse($("gwSrc").value); if(d.kind) gwSetKind(d.kind,false); else gwPreview(); toast("Đã dán phiếu từ AI."); }catch{ $("gwSrc").value=""; $("gwSrc").focus(); toast("Bấm Ctrl+V để dán kết quả AI vào ô nội dung."); } };
 ["gwLesson","gwGrade","gwTime","gwMem","gwLevel","gwSrcKind","gwGroups"].forEach(id=>{ const v=store.get(id,null); if(v!=null) $(id).value=v; $(id).addEventListener("change",()=>{ store.set(id,$(id).value); if(id==="gwMem"){ const v=$("gwSrc").value; if(/^@\s*thành viên\s*:/mi.test(v)){ $("gwSrc").value=v.replace(/^(@\s*thành viên\s*:).*$/mi,`$1 ${$("gwMem").value}`); store.set("gwSrc",$("gwSrc").value); } gwPreview(); } }); });
 ["gwKey","gwColor"].forEach(id=>{ const v=store.get(id,null); if(v!=null) $(id).checked=v; });
 // ---------- in ----------
@@ -4498,6 +4523,101 @@ $("gwPrint").onclick=gwPrint;
 // khởi động
 $("gwSrc").value=store.get("gwSrc","")||"";
 { const k0=GW[store.get("gwKind","manhghep")]?store.get("gwKind","manhghep"):"manhghep"; if(!$("gwSrc").value.trim()) $("gwSrc").value=GW_SAMPLES[k0]; gwSetKind(gwParse($("gwSrc").value).kind||k0,false); }
+
+/* ================= LÀM ĐẸP MÃ LATEX khi nhập .md / JSON ================= */
+const LX_OPTS_DEF={auto:true,vecAll:true,dec:true,func:true,mul:true,ang:true};
+const LXO=()=>({...LX_OPTS_DEF,...store.get("lxOpts",{})});
+const LX_UNI={"≤":"\\le ","≥":"\\ge ","≠":"\\ne ","≈":"\\approx ","±":"\\pm ","∓":"\\mp ","×":"\\times ","÷":"\\div ","·":"\\cdot ","⋅":"\\cdot ","∞":"\\infty ",
+  "∈":"\\in ","∉":"\\notin ","⊂":"\\subset ","⊆":"\\subseteq ","⊃":"\\supset ","∩":"\\cap ","∪":"\\cup ","∅":"\\varnothing ","∀":"\\forall ","∃":"\\exists ",
+  "⇒":"\\Rightarrow ","⇔":"\\Leftrightarrow ","→":"\\to ","←":"\\leftarrow ","↔":"\\leftrightarrow ","∠":"\\angle ","⊥":"\\perp ","∥":"\\parallel ","∽":"\\backsim ","≡":"\\equiv ",
+  "π":"\\pi ","α":"\\alpha ","β":"\\beta ","γ":"\\gamma ","δ":"\\delta ","ε":"\\varepsilon ","θ":"\\theta ","λ":"\\lambda ","μ":"\\mu ","σ":"\\sigma ","φ":"\\varphi ","ω":"\\omega ","ρ":"\\rho ","τ":"\\tau ",
+  "Δ":"\\Delta ","Ω":"\\Omega ","Σ":"\\Sigma ","Φ":"\\Phi ","Π":"\\Pi ","°":"^\\circ ","′":"'","−":"-","–":"-","ℝ":"\\mathbb{R}","ℕ":"\\mathbb{N}","ℤ":"\\mathbb{Z}","ℚ":"\\mathbb{Q}"};
+// làm đẹp một công thức (phần bên trong $…$)
+function lxMath(s,o,cnt){
+  const add=(k,n=1)=>{ cnt[k]=(cnt[k]||0)+n; };
+  // giữ nguyên chữ trong \text{…}, \mathrm{…}, \operatorname{…}
+  const keep=[]; s=s.replace(/\\(text|mathrm|operatorname|textbf|textit|mbox)\s*\{[^{}]*\}/g,m=>{ keep.push(m); return `\u0001${keep.length-1}\u0001`; });
+  const R=(re,f,k)=>{ s=s.replace(re,(...a)=>{ const r=typeof f==="function"?f(...a):f; if(r!==a[0]) add(k); return r; }); };
+  // vectơ: \vec{AB} → \overrightarrow{AB} (mũi tên dài phủ hết tên vectơ)
+  R(/\\vec\s*\{\s*([^{}]+?)\s*\}/g,(m,x)=>(o.vecAll||x.replace(/[\s_^{}\\']/g,"").length>1)?`\\overrightarrow{${x}}`:m,"Vectơ \\vec → \\overrightarrow");
+  R(/\\vec\s+([A-Za-z][A-Za-z0-9']*)/g,(m,x)=>`\\overrightarrow{${x}}`,"Vectơ \\vec → \\overrightarrow");
+  R(/\\vec([A-Z]{1,3})(?![A-Za-z])/g,(m,x)=>`\\overrightarrow{${x}}`,"Vectơ \\vec → \\overrightarrow");
+  R(/\\overrightarrow\s+([A-Za-z][A-Za-z0-9']*)/g,(m,x)=>`\\overrightarrow{${x}}`,"Thêm ngoặc { } cho kí hiệu");
+  // góc, dấu ngã, gạch trên nhiều chữ → bản rộng
+  R(/\\hat\s*\{\s*([^{}]{2,}?)\s*\}/g,(m,x)=>`\\widehat{${x}}`,"Góc \\hat → \\widehat");
+  R(/\\tilde\s*\{\s*([^{}]{2,}?)\s*\}/g,(m,x)=>`\\widetilde{${x}}`,"\\tilde → \\widetilde");
+  R(/\\bar\s*\{\s*([^{}]{2,}?)\s*\}/g,(m,x)=>`\\overline{${x}}`,"\\bar → \\overline");
+  if(o.ang) R(/\\angle\s*\{?\s*([A-Z]{3})\s*\}?/g,(m,x)=>`\\widehat{${x}}`,"Góc \\angle ABC → \\widehat{ABC}");
+  R(/\\emptyset/g,"\\varnothing","∅ → \\varnothing");
+  R(/\\mathbb\s+([A-Z])/g,(m,x)=>`\\mathbb{${x}}`,"Thêm ngoặc { } cho kí hiệu");
+  R(/\\(le|ge)q(?![a-z])/g,(m,x)=>`\\${x}`,"\\leq/\\geq → \\le/\\ge");
+  // độ: 60^0, 60^o, 60^{0}, 60° → 60^\circ
+  R(/(\d)\s*\^\s*\{?\s*(?:0|o|\\circ\s*)\s*\}?(?![\d\w])/g,(m,d)=>`${d}^\\circ`,"Độ ^0 / ° → ^\\circ");
+  // kí tự Unicode → lệnh LaTeX
+  R(/√\s*\(([^()]*)\)/g,(m,x)=>`\\sqrt{${x}}`,"Kí tự Unicode → LaTeX");
+  R(/√\s*\{([^{}]*)\}/g,(m,x)=>`\\sqrt{${x}}`,"Kí tự Unicode → LaTeX");
+  R(/√\s*([A-Za-z0-9]+(?:[.,]\d+)?)/g,(m,x)=>`\\sqrt{${x}}`,"Kí tự Unicode → LaTeX");
+  R(/[≤≥≠≈±∓×÷·⋅∞∈∉⊂⊆⊃∩∪∅∀∃⇒⇔→←↔∠⊥∥∽≡παβγδεθλμσφωρτΔΩΣΦΠ°′−–ℝℕℤℚ]/g,ch=>LX_UNI[ch],"Kí tự Unicode → LaTeX");
+  s=s.replace(/\^\\circ\s+\^\\circ/g,"^\\circ");
+  // phép toán gõ kiểu bàn phím
+  R(/<=>/g,"\\Leftrightarrow ","<= >= != … → \\le \\ge \\ne …"); R(/=>/g,"\\Rightarrow ","<= >= != … → \\le \\ge \\ne …");
+  R(/<=/g,"\\le ","<= >= != … → \\le \\ge \\ne …"); R(/>=/g,"\\ge ","<= >= != … → \\le \\ge \\ne …"); R(/!=/g,"\\ne ","<= >= != … → \\le \\ge \\ne …");
+  R(/\+-/g,"\\pm ","<= >= != … → \\le \\ge \\ne …"); R(/(?<![<\-])->(?!>)/g,"\\to ","<= >= != … → \\le \\ge \\ne …");
+  if(o.mul) R(/(\d|\))\s*\*\s*(?=[\d(\\A-Za-z])/g,(m,a)=>`${a} \\cdot `,"Dấu * → \\cdot");
+  // tên hàm viết thường → lệnh: sin x → \sin x
+  if(o.func) R(/(^|[^\\A-Za-z])(arcsin|arccos|arctan|sin|cos|tan|cot|log|ln|lim|max|min|exp)(?![A-Za-z])/g,(m,p,f)=>`${p}\\${f}`,"Tên hàm sin, cos, log… → \\sin, \\cos, \\log…");
+  // dấu phẩy thập phân 2,5 → 2{,}5 (không làm trong tập hợp \{…\} hay dãy 1,2,3)
+  if(o.dec){ let depth=0; let out=""; for(let i=0;i<s.length;i++){ const c=s[i];
+      if(s.startsWith("\\{",i)){ depth++; out+="\\{"; i++; continue; } if(s.startsWith("\\}",i)){ depth=Math.max(0,depth-1); out+="\\}"; i++; continue; }
+      if(c===","&&!depth&&/\d/.test(s[i-1]||"")&&/\d/.test(s[i+1]||"")&&s[i-1+0]!=="{"){
+        const before=s.slice(0,i), after=s.slice(i+1); const prevList=/,\s*\d+$/.test(before.replace(/\{,\}/g,"")), nextList=/^\d+\s*,\s*\d/.test(after);
+        const inPair=/[(\[]\s*-?\d+$/.test(before)&&/^\d+\s*[)\]]/.test(after);
+        if(!prevList&&!nextList&&!inPair&&!before.endsWith("{")){ out+="{,}"; add("Dấu phẩy thập phân 2,5 → 2{,}5"); continue; } }
+      out+=c; } s=out; }
+  s=s.replace(/ {2,}/g," ").replace(/\\(le|ge|ne|pm|to|in|cdot|times|div|approx|infty|varnothing|Rightarrow|Leftrightarrow|circ|pi|alpha|beta|gamma|delta|Delta|theta|lambda|mu|sigma|varphi|omega) (?=[}\)\]$,.;:]|$)/g,"\\$1");
+  return s.replace(/\u0001(\d+)\u0001/g,(m,i)=>keep[+i]);
+}
+// làm đẹp cả văn bản: chỉ sửa trong $…$ / $$…$$; \( \) và \[ \] đổi sang $ / $$
+function lxText(text,o=LXO(),cnt={}){
+  let t=String(text);
+  t=t.replace(/\\\[([\s\S]+?)\\\]/g,(m,x)=>{ cnt["\\[ \\] → $$ $$"]=(cnt["\\[ \\] → $$ $$"]||0)+1; return `$$${x}$$`; });
+  t=t.replace(/\\\(([\s\S]+?)\\\)/g,(m,x)=>{ cnt["\\( \\) → $ $"]=(cnt["\\( \\) → $ $"]||0)+1; return `$${x}$`; });
+  return t.split(/(\$\$[\s\S]+?\$\$|(?<!\\)\$[^$\n]+?(?<!\\)\$)/).map((p,i)=>{ if(i%2===0) return p; const dd=p.startsWith("$$"); const inner=dd?p.slice(2,-2):p.slice(1,-1); const r=lxMath(inner,o,cnt); return dd?`$$${r}$$`:`$${r}$`; }).join("");
+}
+// JSON: chỉ sửa các chuỗi bên trong, giữ nguyên cấu trúc
+function lxAny(text,o=LXO()){
+  const cnt={}; const s=String(text); const st=s.trim();
+  if(/^[{\[]/.test(st)){ try{ const walk=v=>typeof v==="string"?lxText(v,o,cnt):Array.isArray(v)?v.map(walk):v&&typeof v==="object"?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,walk(x)])):v;
+      const out=JSON.stringify(walk(JSON.parse(st)),null,2)+"\n"; return {text:Object.keys(cnt).length?out:s,cnt}; }catch(e){} }
+  return {text:lxText(s,o,cnt),cnt};
+}
+const lxTotal=c=>Object.values(c).reduce((a,b)=>a+b,0);
+// áp dụng vào một ô soạn, có thanh “Hoàn tác”
+function lxApplyTo(ta,manual){
+  const before=ta.value; const {text,cnt}=lxAny(before); const n=lxTotal(cnt);
+  if(!n){ if(manual) toast("Mã LaTeX đã gọn đẹp, không cần sửa."); return 0; }
+  ta.value=text; ta.dispatchEvent(new Event("input",{bubbles:true}));
+  lxBar(ta,before,cnt); return n;
+}
+function lxBar(ta,before,cnt){
+  let b=$("lxBar"); if(!b){ b=document.createElement("div"); b.id="lxBar"; b.setAttribute("role","status"); document.body.appendChild(b); }
+  const n=lxTotal(cnt);
+  b.innerHTML=`<b>✨ Đã làm đẹp ${n} chỗ LaTeX</b><span>${Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${esc(k)} <i>×${v}</i>`).join(" · ")}</span><button type="button" id="lxUndo">Hoàn tác</button><button type="button" id="lxX" aria-label="Đóng">✕</button>`;
+  b.hidden=false; clearTimeout(lxBar.t); lxBar.t=setTimeout(()=>{ b.hidden=true; },12000);
+  $("lxUndo").onclick=()=>{ ta.value=before; ta.dispatchEvent(new Event("input",{bubbles:true})); b.hidden=true; toast("Đã hoàn tác làm đẹp LaTeX."); };
+  $("lxX").onclick=()=>{ b.hidden=true; };
+}
+// tự làm đẹp khi dán / nhập file vào các ô soạn
+["src","gwSrc","twSrc"].forEach(id=>{ const ta=$(id); if(!ta) return; ta.addEventListener("paste",()=>{ if(LXO().auto) setTimeout(()=>lxApplyTo(ta),60); }); });
+// bảng tuỳ chọn + nút làm đẹp thủ công
+function lxSyncOpts(){ const o=LXO(); document.querySelectorAll("[data-lx]").forEach(c=>c.checked=!!o[c.dataset.lx]); }
+document.querySelectorAll("[data-lx]").forEach(c=>c.addEventListener("change",()=>{ const o=LXO(); o[c.dataset.lx]=c.checked; store.set("lxOpts",o); lxDemo(); }));
+function lxDemo(){ const ex=["Cho $\\vec{AB}+\\vec{BC}=\\vec{AC}$, $\\vec a \\perp \\vec b$","$\\hat{ABC}=60^0$, $x>=2$, $x != 1$, $AB=2,5$ cm","$sin x = √3/2$, $x ∈ ℝ$, $A ∩ B = ∅$, $2*3$"];
+  $("lxDemo").innerHTML=ex.map(e=>`<div><code>${esc(e)}</code><span>→</span><code>${esc(lxText(e))}</code></div>`).join(""); }
+$("btnLx").onclick=()=>lxApplyTo($("src"),true);
+$("twLx").onclick=()=>lxApplyTo($("twSrc"),true);
+$("gwLx").onclick=()=>lxApplyTo($("gwSrc"),true);
+lxSyncOpts(); lxDemo();
 
 /* ---------------- khởi động ---------------- */
 $("src").value=store.get("src","")||($("sample").textContent.trim()+"\n");
