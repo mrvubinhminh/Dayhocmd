@@ -905,7 +905,7 @@ nội dung, - gạch đầu dòng, 1. đánh số, $công thức$, ![hình](link
           <div class="row" style="justify-content:space-between"><b>Nội dung phiếu (.md / JSON / HTML)</b><span class="hint" id="twStat"></span></div>
           <textarea id="twSrc" spellcheck="false" aria-label="Nội dung phiếu tự học"></textarea>
           <div class="row gw-print">
-            <label>Cỡ chữ<select id="twFs"><option value="11">11 pt</option><option value="11.5" selected>11,5 pt</option><option value="12">12 pt</option></select></label>
+            <label>Cỡ chữ<select id="twFs"><option value="10">10 pt – tiết kiệm</option><option value="11">11 pt</option><option value="11.5" selected>11,5 pt</option><option value="12">12 pt</option></select></label>
             <label>Dòng kẻ làm bài<select id="twLineN"><option value="0">Bỏ dòng kẻ</option><option value="-1">Bớt 1 dòng / câu</option><option value="def" selected>Theo phiếu</option><option value="1">Thêm 1 dòng / câu</option><option value="2">Thêm 2 dòng / câu</option><option value="3">Thêm 3 dòng / câu</option></select></label>
             <label>Kiểu kẻ<select id="twLine"><option value="dot" selected>Chấm mờ</option><option value="solid">Kẻ liền xám</option></select></label>
             <label class="chk"><input type="checkbox" id="twDraft" checked> Cột trái trống → thêm dòng nháp</label>
@@ -1236,6 +1236,15 @@ function doPost(e) {
 .tw .chk ol{margin:0}
 .tw .tips{border:.5px solid var(--ln);padding:1.4mm 2.5mm}
 .tw .note{font-size:.78em;color:#555;font-style:italic}
+/* cỡ 10 pt tiết kiệm: thu gọn lề, khoảng cách, dòng kẻ 6 mm */
+.tw.small .tp{line-height:1.3;padding:8mm 9mm}
+.tw.small .hd{margin-bottom:1.6mm;padding-bottom:1mm}
+.tw.small .sec{margin-bottom:1.6mm}
+.tw.small .box,.tw.small .two>div,.tw.small .chk,.tw.small .tips{padding:1mm 2mm}
+.tw.small .dang{margin-bottom:1.6mm}
+.tw.small .ln,.tw.small .draft .ln{height:6mm}
+.tw.small .q{margin-bottom:1mm}
+.tw.small .twimg{max-height:30mm}
 </style>
 <script type="text/plain" id="twSampleMd">
 @bài: Hệ thức lượng trong tam giác
@@ -4061,9 +4070,9 @@ function twHTML(d){
 // cột ví dụ ngắn hơn cột luyện tập → lấp phần trống bằng dòng kẻ nháp (đo sau khi công thức đã hiển thị)
 function twFillDraft(root){ if(!$("twDraft").checked) return; root.querySelectorAll(".tw .lcol").forEach(col=>{ const lc=col.querySelector(".lc"); col.querySelectorAll(".draft").forEach(x=>x.remove());
     const cs=getComputedStyle(col), free=col.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-lc.offsetHeight;
-    const lh=7*96/25.4, n=Math.floor((free-22)/lh); if(n<2) return;
+    const lh=(col.closest(".tw.small")?6:7)*96/25.4, n=Math.floor((free-22)/lh); if(n<2) return;
     const d=document.createElement("div"); d.className="draft"; d.innerHTML=`<div class="dl">Nháp</div>`+'<div class="ln"></div>'.repeat(Math.min(n,30)); col.appendChild(d); }); }
-const twWrapCls=()=>`tw${$("twLine").value==="solid"?" solid":""}`;
+const twWrapCls=()=>`tw${$("twLine").value==="solid"?" solid":""}${+$("twFs").value<=10?" small":""}`;
 const twStyle=()=>`--fs:${$("twFs").value}pt`;
 // HTML độc lập do AI viết: xem trong khung cách li
 function twIsolatedDoc(src){ let s=String(src).trim().replace(/^```\w*\s*|```\s*$/g,""); if(!/<html/i.test(s)) s=`<!doctype html><html lang="vi"><head><meta charset="utf-8"><script src="https://cdn.tailwindcss.com"><\/script><script>window.MathJax={tex:{inlineMath:[["$","$"]]}};<\/script><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"><\/script></head><body>${s}</body></html>`; return s; }
@@ -4179,7 +4188,7 @@ async function twPrint(){
     const mjx=(document.getElementById("MJX-SVG-styles")||{}).textContent||"";
     out=`<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Phiếu tự học – ${esc(d.bai||"")}</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap">
-<style>${mjx}\n${TW_CSS}\n@page{size:A4;margin:10mm 11mm}html,body{margin:0;background:#fff}.tw .tp{width:auto;min-height:0;padding:0}.tip{font:14px Arial,sans-serif;max-width:190mm;margin:10px auto}@media print{.tip{display:none}}@media screen{body{background:#eee}.tw .tp{width:188mm;margin:10px auto;padding:10mm 11mm;background:#fff}}</style></head><body>
+<style>${mjx}\n${TW_CSS}\n@page{size:A4;margin:${+$("twFs").value<=10?"8mm 9mm":"10mm 11mm"}}html,body{margin:0;background:#fff}.tw .tp,.tw.small .tp{width:auto;min-height:0;padding:0}.tip{font:14px Arial,sans-serif;max-width:190mm;margin:10px auto}@media print{.tip{display:none}}@media screen{body{background:#eee}.tw .tp{width:188mm;margin:10px auto;padding:10mm 11mm;background:#fff}}</style></head><body>
 <p class="tip">Bấm <b>Ctrl+P</b> → khổ <b>A4 – Dọc</b>, tắt <b>Đầu trang và chân trang</b> → Lưu PDF hoặc In (trắng đen).</p>
 ${host.innerHTML}
 <scr${""}ipt>(document.fonts?document.fonts.ready:Promise.resolve()).then(function(){setTimeout(function(){window.print()},350)});<\/script></body></html>`;
